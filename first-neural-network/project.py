@@ -49,13 +49,9 @@ val_features, val_targets = features[-60*24:], targets[-60*24:]
 class NeuralNetwork(object):
     def __init__(self, input_nodes, hidden_nodes, output_nodes, learning_rate):
         # Set number of nodes in input, hidden and output layers.
-        # print("\n__init__");
         self.input_nodes = input_nodes
         self.hidden_nodes = hidden_nodes
         self.output_nodes = output_nodes
-        # print("self.input_nodes = ", self.input_nodes)
-        # print("self.hidden_nodes = ", self.hidden_nodes)
-        # print("self.output_nodes = ", self.output_nodes)
         # Initialize weights
         self.weights_input_to_hidden = np.random.normal(0.0, self.input_nodes**-0.5, 
                                        (self.input_nodes, self.hidden_nodes))
@@ -90,58 +86,39 @@ class NeuralNetwork(object):
         
         '''
         n_records = features.shape[0]
-        # print("n_records = ", n_records)
-        # print("self.weights_input_to_hidden = ", self.weights_input_to_hidden);
-        # print("self.weights_hidden_to_output = ", self.weights_hidden_to_output);
         delta_weights_i_h = np.zeros(self.weights_input_to_hidden.shape)
-        # print("delta_weights_i_h = ", delta_weights_i_h);
         delta_weights_h_o = np.zeros(self.weights_hidden_to_output.shape)
-        # print("delta_weights_h_o = ", delta_weights_h_o);
         for X, y in zip(features, targets):
             #### Implement the forward pass here ####
             ### Forward pass ###
             # TODO: Hidden layer - Replace these values with your calculations.
-            # print("X = ", X);
-            # print("y = ", y);
             hidden_inputs = np.dot(X, self.weights_input_to_hidden) # signals into hidden layer
-            # print("hidden_inputs = ", hidden_inputs);
             hidden_outputs = self.activation_function(hidden_inputs) # signals from hidden layer
-            # print("hidden_outputs = ", hidden_outputs);
 
             # TODO: Output layer - Replace these values with your calculations.
             final_inputs = np.dot(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
-            # print("final_inputs = ", final_inputs);
             final_outputs = final_inputs # signals from final output layer
-            # print("final_outputs = ", final_outputs);
             
             #### Implement the backward pass here ####
             ### Backward pass ###
 
             # TODO: Output error - Replace this value with your calculations.
             error = y - final_outputs # Output layer error is the difference between desired target and actual output.
-            # print("error = ", error);
             
             # If f(x) = x, then f'(x) = 1
             output_error_term = error
-            # print("output_error_term = ", output_error_term);
 
             # TODO: Calculate the hidden layer's contribution to the error
             hidden_error = output_error_term * self.weights_hidden_to_output
-            # print("hidden_error = ", hidden_error);
             
             # TODO: Backpropagated error terms - Replace these values with your calculations.
             f_prime_h = hidden_outputs * (1 - hidden_outputs);
-            # print("f_prime_h = ", f_prime_h)
             hidden_error_term = hidden_error * f_prime_h[:, None]
-            # print("hidden_error_term = ", hidden_error_term);
 
             # Weight step (input to hidden)
             delta_weights_i_h += hidden_error_term.T * X[:, None]
-            # delta_weights_i_h += hidden_error_term * X[:, None]
-            # print("delta_weights_i_h = ", delta_weights_i_h);
             # Weight step (hidden to output)
             delta_weights_h_o += output_error_term * hidden_outputs[:, None]
-            # print("delta_weights_h_o = ", delta_weights_h_o);
 
         # TODO: Update the weights - Replace these values with your calculations.
         self.weights_hidden_to_output += self.lr * delta_weights_h_o / n_records # update hidden-to-output weights with gradient descent step
@@ -209,7 +186,6 @@ class TestMethods(unittest.TestCase):
         network.weights_hidden_to_output = test_w_h_o.copy()
         
         network.train(inputs, targets)
-        # print("network.weights_hidden_to_output = ", network.weights_hidden_to_output)
         self.assertTrue(np.allclose(network.weights_hidden_to_output, 
                                     np.array([[ 0.37275328], 
                                               [-0.03172939]])))
